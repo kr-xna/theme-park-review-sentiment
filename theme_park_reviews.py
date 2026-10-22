@@ -1,10 +1,13 @@
-Description:
-    Advanced AI for Business: Sentiment analysis & topic modeling of theme park reviews.
+"""
+Theme park reviews: sentiment analysis and topic modelling.
 
-README:
-- Requires: pandas, numpy, seaborn, matplotlib, nltk, sklearn, wordcloud, textblob
-- Run using: python mis780a1_223067545.py
-- Outputs: EDA, sentiment plots, topic modeling results
+Scores every review's sentiment with TextBlob, compares average sentiment
+across park branches, and uses LDA to surface the main themes visitors write about.
+
+Usage:
+    python theme_park_reviews.py
+
+Expects ThemeParkReviews.csv (columns: Branch, Review_Text) in the working directory.
 """
 
 import pandas as pd
@@ -18,11 +21,13 @@ from sklearn.decomposition import LatentDirichletAllocation
 from textblob import TextBlob
 import nltk
 
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)  # needed by word_tokenize on newer NLTK versions
+nltk.download('stopwords', quiet=True)
 
 # Load Data
 df = pd.read_csv('ThemeParkReviews.csv')
+df = df.dropna(subset=['Review_Text'])
 
 # Executive Summary
 print("Loaded dataset with", df.shape[0], "reviews.")
@@ -45,7 +50,7 @@ plt.title('Average Sentiment by Branch')
 plt.show()
 
 # WordCloud for all reviews
-text = ' '.join(df['Review_Text'].dropna())
+text = ' '.join(df['Review_Text'])
 wc = WordCloud(width=800, height=400, stopwords=set(stopwords.words('english'))).generate(text)
 plt.figure(figsize=(10,5))
 plt.imshow(wc, interpolation='bilinear')
